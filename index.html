@@ -376,8 +376,8 @@
             align-items: center; /* 垂直居中 */
             justify-content: center; /* 水平居中 */
             
-            /* V23: 減少垂直 padding 和水平 padding */
-            padding: 6px 4px; 
+            /* V24: 再次減少水平內邊距 */
+            padding: 6px 2px; /* 最小化水平內邊距 */
             min-height: 40px; /* 略微縮小最小高度 */
             
             width: 100%; /* 讓它佔滿 grid cell */
@@ -575,12 +575,28 @@
             box-shadow: 0 0 8px rgba(169, 228, 217, 0.9); /* Brighter glow */
         }
         
+        /* NEW: Highlight WRONG option after grading (粉紅色底) */
+        .option-label.wrong-highlight {
+            background-color: var(--color-light-incorrect) !important;
+            border-color: var(--color-incorrect) !important; 
+            color: var(--color-red-text) !important; /* 確保文字是紅色的 */
+            font-weight: 700 !important;
+            box-shadow: 0 0 10px rgba(255, 153, 164, 0.9);
+        }
+        
+        .dark-mode .option-label.wrong-highlight {
+            background-color: #6d424b !important;
+            border-color: var(--color-incorrect) !important;
+            color: var(--color-red-text) !important;
+        }
+        
+        
         .dark-mode input[type="radio"]:checked + .option-label {
              color: #1e272e; /* Dark text on light button */
         }
 
 
-        /* NEW: Highlight correct option after grading */
+        /* NEW: Highlight correct option after grading (綠色底) */
         .option-label.correct-highlight {
             background-color: var(--color-correct) !important;
             border-color: #5ccb99 !important;
@@ -980,7 +996,7 @@
         // --- I. 資料結構 (Data Structure) ---
         // 題庫資料
         const quizData = [
-           {"chapter":"CH1","topic":"理論題","question":"根據台灣行銷科學學會的定義，「行銷」的核心本質是什麼？","A":"品牌建立","B":"價值交換","C":"產品設計","D":"顧客關係管理","answer":"B","explanation":"台灣行銷科學學會定義中，行銷的核心為「交換」與「交易」，即價值交換的過程。"},
+            {"chapter":"CH1","topic":"理論題","question":"根據台灣行銷科學學會的定義，「行銷」的核心本質是什麼？","A":"品牌建立","B":"價值交換","C":"產品設計","D":"顧客關係管理","answer":"B","explanation":"台灣行銷科學學會定義中，行銷的核心為「交換」與「交易」，即價值交換的過程。"},
 {"chapter":"CH1","topic":"理論題","question":"以下何者最能區分現代行銷與傳統銷售的觀點？","A":"企業利益優先順序","B":"僅專注商品銷售","C":"價值與關係的互動","D":"廣告推廣方式不同","answer":"C","explanation":"現代行銷強調「價值互換」與「關係建立」，而非僅以企業獲利或單向推銷為導向。"},
 {"chapter":"CH1","topic":"理論題","question":"下列何者不屬於行銷中可能交換的價值形式？","A":"商品","B":"理念","C":"資訊","D":"產線自動化","answer":"D","explanation":"行銷中的交換可涵蓋商品、服務、資訊、理念等，但「產線自動化」屬於內部營運，不是對外價值交換內容。"},
 {"chapter":"CH1","topic":"實務題","question":"消費者選擇購買 Patagonia 戶外服飾，不僅因為產品耐用，更因為品牌積極倡導「環境永續」與「修補代替丟棄」的價值。這種行為最符合哪一種「行銷價值交換」概念？","A":"理念交換","B":"金錢交換","C":"信任交換","D":"資訊交換","answer":"A","explanation":"理念交換強調品牌與消費者在價值觀上的共鳴，例如環保或公益。Patagonia 案例中，消費者購買是因為認同其「環境永續」理念，而非單純依賴品牌的品質，因此不是信任交換。"},
@@ -1879,7 +1895,7 @@
 {"chapter":"CH10","topic":"實務題","question":"化妝品品牌寄出EDM電子報後，特別觀察開信率與點擊優惠連結的比例，這主要是衡量哪一KPI？","A":"顧客互動","B":"顧客取得","C":"顧客維繫","D":"顧客服務","answer":"A","explanation":"EDM的開信率與點擊率反映顧客在接觸點的互動活躍度。"},
 {"chapter":"CH10","topic":"實務題","question":"在顧客關係管理分析中，常引用80／20法則，意即20%的顧客，可能貢獻80%的營收。此概念最能說明哪一個顧客關係管理KPI的重要性？","A":"顧客取得","B":"顧客維繫","C":"顧客價值","D":"顧客服務","answer":"C","explanation":"80／20法則強調少數高價值顧客對營收的關鍵貢獻，正是顧客價值評估的核心精神。"},
 {"chapter":"CH10","topic":"實務題","question":"銀行推動顧客關係管理（CRM）系統，除了追求市場佔有率與銷售成長外，更希望透過蒐集完整資料，持續追蹤顧客需求，並進一步設計個人化服務。一般而言，顧客關係管理的終極目標是：","A":"市場佔有率","B":"顧客取得","C":"銷售量","D":"建立可信賴的資料庫","answer":"D","explanation":"CRM的核心並非單純提升銷售或滿足顧客權力，而是要建立「可信賴的資料庫」。透過完整且正確的資料，企業才能深入分析顧客行為，長期維繫顧客關係，進而支撐後續的行銷決策與服務設計。"},
- ];
+  ];
         
         // --- II. 狀態管理 (State Management) ---
         let currentQuiz = []; // 當前測驗的 10 題
@@ -2092,7 +2108,11 @@
                 } 
                 // 如果是使用者錯誤的選擇
                 else if (isAnswered && key === userAnswer) {
-                    // 保持選中樣式，但在 CSS 中已通過 radio:disabled + label 降低透明度
+                    // ** V24: 新增錯誤選項的高亮類別 **
+                    // 這裡不需要額外的檢查，因為邏輯在前面已經檢查過是否是正確答案
+                    if (key !== question.answer) {
+                        labelClass += ' wrong-highlight';
+                    }
                 }
 
                 return `
@@ -2179,6 +2199,22 @@
                 const correctLabel = document.querySelector(`label[for="${correctRadio.id}"]`);
                 if (correctLabel) {
                     correctLabel.classList.add('correct-highlight');
+                    // 移除可能的 wrong-highlight，確保正確答案顏色優先
+                    correctLabel.classList.remove('wrong-highlight');
+                }
+            }
+            
+            // 如果答錯了，確保選錯的選項也高亮
+            if (!isCorrect) {
+                const wrongRadio = document.getElementById(`q${index}-option-${selectedValue}`);
+                 if (wrongRadio) {
+                    const wrongLabel = document.querySelector(`label[for="${wrongRadio.id}"]`);
+                    if (wrongLabel) {
+                        wrongLabel.classList.add('wrong-highlight');
+                        // 移除可能的選中邊框樣式，確保錯誤樣式優先
+                        wrongLabel.classList.remove('correct-highlight'); 
+                        // Note: 雖然 radio:checked + label 樣式可能優先，但 wrong-highlight 設置了 !important 應該會覆蓋
+                    }
                 }
             }
             
