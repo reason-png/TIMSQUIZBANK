@@ -59,6 +59,8 @@
             --color-light-correct: #E8FBF5; /* Very Light Mint Green */
             --color-light-incorrect: #FFE8EB; /* Very Light Pink */
             --color-border: #eee;
+            --color-green-text: #28a745; /* 標準綠色 (Light Mode) */
+            --color-red-text: #dc3545; /* 標準紅色 (Light Mode) */
 
 
             /* Font Sizes for adjustment */
@@ -86,6 +88,8 @@
             --color-light-correct: #4b6d63; /* Darker Mint */
             --color-light-incorrect: #6d424b; /* Darker Pink */
             --color-border: #4a637d;
+            --color-green-text: #83E8C1; /* 亮綠色 (Dark Mode) */
+            --color-red-text: #FF99A4; /* 亮紅色 (Dark Mode) */
         }
 
         body {
@@ -1833,7 +1837,7 @@
 {"chapter":"CH10","topic":"實務題","question":"化妝品品牌寄出EDM電子報後，特別觀察開信率與點擊優惠連結的比例，這主要是衡量哪一KPI？","A":"顧客互動","B":"顧客取得","C":"顧客維繫","D":"顧客服務","answer":"A","explanation":"EDM的開信率與點擊率反映顧客在接觸點的互動活躍度。"},
 {"chapter":"CH10","topic":"實務題","question":"在顧客關係管理分析中，常引用80／20法則，意即20%的顧客，可能貢獻80%的營收。此概念最能說明哪一個顧客關係管理KPI的重要性？","A":"顧客取得","B":"顧客維繫","C":"顧客價值","D":"顧客服務","answer":"C","explanation":"80／20法則強調少數高價值顧客對營收的關鍵貢獻，正是顧客價值評估的核心精神。"},
 {"chapter":"CH10","topic":"實務題","question":"銀行推動顧客關係管理（CRM）系統，除了追求市場佔有率與銷售成長外，更希望透過蒐集完整資料，持續追蹤顧客需求，並進一步設計個人化服務。一般而言，顧客關係管理的終極目標是：","A":"市場佔有率","B":"顧客取得","C":"銷售量","D":"建立可信賴的資料庫","answer":"D","explanation":"CRM的核心並非單純提升銷售或滿足顧客權力，而是要建立「可信賴的資料庫」。透過完整且正確的資料，企業才能深入分析顧客行為，長期維繫顧客關係，進而支撐後續的行銷決策與服務設計。"},
-];
+ ];
         
         // --- II. 狀態管理 (State Management) ---
         let currentQuiz = []; // 當前測驗的 10 題
@@ -1842,6 +1846,20 @@
         const totalQuestions = 10;
         
         // --- III. 核心功能 (Core Functions) ---
+
+        /** V11 NEW: 獲取主題相關的顏色變數 */
+        function getColorVariables() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const root = document.documentElement;
+
+            return {
+                // 獲取 CSS 變數中的顏色，確保適應主題
+                correctColor: getComputedStyle(root).getPropertyValue('--color-green-text'),
+                wrongColor: getComputedStyle(root).getPropertyValue('--color-red-text'),
+                defaultColor: getComputedStyle(root).getPropertyValue('--color-text-light'),
+            };
+        }
+
 
         /** 調整全文字體大小 */
         function adjustFontSize(size) {
@@ -1877,8 +1895,12 @@
             // 確保按鈕的背景色和圖示能正確更新
             updateButtonColors();
             // 切換主題後，如果當前有題目，需要重新渲染一次反饋區域以更新顏色
-            if (document.getElementById('quiz-screen').style.display !== 'none' && userAnswers.hasOwnProperty(currentQuestionIndex)) {
-                renderFeedback(currentQuestionIndex, userAnswers[currentQuestionIndex]);
+            if (document.getElementById('quiz-screen').style.display !== 'none') {
+                const userAnswer = userAnswers[currentQuestionIndex];
+                if (userAnswer !== undefined) {
+                    // 如果當前頁面已經作答，重新渲染反饋區以更新顏色
+                    renderFeedback(currentQuestionIndex, userAnswer);
+                }
             }
         }
         
@@ -2006,11 +2028,11 @@
                 let labelClass = 'option-label adjustable-text';
                 let disabledAttr = isAnswered ? 'disabled' : '';
                 
-                // 如果已作答，且這是正確答案，則高亮它
+                // 如果已作答，且這是正確答案，則高亮它 (邊框/背景)
                 if (isAnswered && key === question.answer) {
                     labelClass += ' correct-highlight';
                 } 
-                // 如果已作答，且是使用者錯誤的選擇，則保持選中樣式，但選項被禁用
+                // 如果是使用者錯誤的選擇
                 else if (isAnswered && key === userAnswer) {
                     // 保持選中樣式，但在 CSS 中已通過 radio:disabled + label 降低透明度
                 }
@@ -2090,7 +2112,10 @@
             const selectedOptionText = question[selectedValue];
             const correctOptionText = question[question.answer];
             
-            // 找到正確答案的 Label 進行高亮 (即使是使用者點錯，正確答案也會被高亮)
+            // V11 NEW: 獲取主題顏色
+            const colors = getColorVariables();
+            
+            // 找到正確答案的 Label 進行高亮 (邊框/背景)
             const correctRadio = document.getElementById(`q${index}-option-${question.answer}`);
             if (correctRadio) {
                 const correctLabel = document.querySelector(`label[for="${correctRadio.id}"]`);
@@ -2110,13 +2135,14 @@
                     </div>
                     
                     <p style="margin: 10px 0 0 0; font-weight: 600;">您的選擇 (${selectedValue || '-'}): 
-                        <span style="font-weight: 400; color: ${isCorrect ? '#1e272e' : 'var(--color-text)'};">
+                        <span style="font-weight: 400; color: ${isCorrect ? colors.correctColor : colors.wrongColor};">
                             ${selectedOptionText || '未作答'}
                         </span>
                     </p>
                     ${!isCorrect ? 
+                        // V11 FIX: 確保正確答案文字是綠色的
                         `<p style="margin: 5px 0; font-weight: 600;">正確答案 (${question.answer}): 
-                            <span style="font-weight: 400; color: #1e272e;">
+                            <span style="font-weight: 400; color: ${colors.correctColor};">
                                 ${correctOptionText}
                             </span>
                         </p>` : ''}
@@ -2244,6 +2270,9 @@
                 message = "表現不錯！已經掌握大部分重點，再加強幾個錯誤的觀念就能輕鬆通過！";
                 scoreIcon = '👍'; // Level 51-80 (V7 新增)
             }
+            
+            // V11: 獲取主題顏色
+            const colors = getColorVariables();
 
             // 渲染分數和鼓勵訊息
             encouragementDiv.className = `encouragement adjustable-text ${levelClass}`;
@@ -2254,6 +2283,7 @@
                 </div>
                 <p style="margin-top: 15px;">${message}</p>
                 <p style="font-size: 1rem; font-weight: 500;">答對 ${correctCount} 題 / 總共 ${total} 題</p>
+                <p style="margin-top: 10px; font-size: 0.9rem; font-weight: 600;">詳細的作答紀錄與題解總覽請見下方。</p>
             `;
 
             // 渲染詳細結果
@@ -2263,11 +2293,6 @@
                 // 找出使用者選擇的選項內容
                 const userAnswerText = item.userAnswer ? item.options[item.userAnswer] : '未作答';
                 
-                // 調整顏色以便在深色模式下有更好的對比
-                const correctColor = document.body.classList.contains('dark-mode') ? 'var(--color-correct)' : 'green';
-                const wrongColor = document.body.contains('dark-mode') ? 'var(--color-incorrect)' : 'red';
-                const defaultColor = document.body.classList.contains('dark-mode') ? 'var(--color-text-light)' : '#7f8c8d';
-
                 return `
                     <div class="result-item ${itemClass}">
                         <div class="result-item-header">
@@ -2283,12 +2308,13 @@
                         
                         <div class="result-detail adjustable-text">
                             <p style="font-weight: 600;">您的選擇 (${item.userAnswer || '-'}): 
-                                <span style="font-weight: 400; color: ${item.userAnswer ? (item.isCorrect ? correctColor : wrongColor) : defaultColor};">
+                                <span style="font-weight: 400; color: ${item.userAnswer ? (item.isCorrect ? colors.correctColor : colors.wrongColor) : colors.defaultColor};">
                                     ${userAnswerText}
                                 </span>
                             </p>
                             <p style="font-weight: 600;">正確答案 (${item.correctAnswer}): 
-                                <span style="font-weight: 400; color: ${correctColor};">
+                                <!-- V11 FIX: 確保正確答案文字是綠色的 -->
+                                <span style="font-weight: 400; color: ${colors.correctColor};">
                                     ${item.options[item.correctAnswer]}
                                 </span>
                             </p>
