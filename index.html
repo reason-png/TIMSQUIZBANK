@@ -14,6 +14,7 @@
         // Use global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        // 修正: 確保這裡使用的是 __initial_auth_token，而不是變數本身
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         if (firebaseConfig) {
@@ -351,16 +352,42 @@
             border: 1px solid var(--color-border);
         }
 
-        .filter-options {
+        /* 章節選擇 (CH1-CH10): 固定 3 欄等寬佈局，避免重疊 */
+        #chapter-filters.filter-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
+            /* 保持 3 欄，並將 gap 增加到 30px */
+            grid-template-columns: repeat(3, 1fr); /* 固定 3 欄 */
+            gap: 30px; /* 增大網格間距，避免黏在一起 */
+        }
+        
+        /* 題目領域 (理論題/實務題): 專屬布局，平均分散 */
+        #topic-filters.filter-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 固定 2 欄等寬 */
+            gap: 30px; /* 增大兩個框框之間的間距 */
+            padding: 0 40px; /* 左右增加內邊距，使按鈕從中間向兩側擴散 */
         }
 
+
         /* --- CHECKBOX VISUAL STYLES (NEW COLORS) --- */
+        /* V22: 進一步調整 padding 讓框框左右寬度看起來更小 */
         .checkbox-label {
-            display: block;
-            padding: 10px;
+            display: flex; /* 使用 flex 佈局 */
+            align-items: center; /* 垂直居中 */
+            justify-content: center; /* 水平居中 */
+            
+            /* V23: 減少垂直 padding 和水平 padding */
+            padding: 6px 4px; 
+            min-height: 40px; /* 略微縮小最小高度 */
+            
+            width: 100%; /* 讓它佔滿 grid cell */
+
+            /* 關鍵修正 V17: 嚴格禁止文字換行並隱藏溢出 */
+            white-space: nowrap; /* 不讓文字換行 */
+            overflow: hidden; /* 隱藏溢出的文字 */
+            text-overflow: ellipsis; /* 溢出時顯示省略號 */
+
+
             background-color: var(--color-input-bg);
             border: 2px solid #cccccc; 
             color: var(--color-text-light); 
@@ -769,9 +796,24 @@
             .btn-nav {
                 padding: 12px 18px;
             }
-            .filter-options {
-                grid-template-columns: 1fr 1fr; /* Two columns on mobile */
+            #chapter-filters.filter-options {
+                /* 手機上使用 2 欄，避免過於擁擠 */
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
             }
+            
+            /* V13 FIX: 確保手機上 checkbox label 的最小寬高，使其均勻 */
+             .checkbox-label {
+                min-height: 50px;
+                font-size: 0.9rem;
+            }
+            
+            /* V18: 題目領域在手機上仍然分散，但間距縮小 */
+            #topic-filters.filter-options {
+                gap: 10px;
+                padding: 0;
+            }
+            
             .quiz-navigation {
                 flex-direction: row; /* 在手機上保持水平佈局 */
                 flex-wrap: wrap;
@@ -938,7 +980,7 @@
         // --- I. 資料結構 (Data Structure) ---
         // 題庫資料
         const quizData = [
-         {"chapter":"CH1","topic":"理論題","question":"根據台灣行銷科學學會的定義，「行銷」的核心本質是什麼？","A":"品牌建立","B":"價值交換","C":"產品設計","D":"顧客關係管理","answer":"B","explanation":"台灣行銷科學學會定義中，行銷的核心為「交換」與「交易」，即價值交換的過程。"},
+           {"chapter":"CH1","topic":"理論題","question":"根據台灣行銷科學學會的定義，「行銷」的核心本質是什麼？","A":"品牌建立","B":"價值交換","C":"產品設計","D":"顧客關係管理","answer":"B","explanation":"台灣行銷科學學會定義中，行銷的核心為「交換」與「交易」，即價值交換的過程。"},
 {"chapter":"CH1","topic":"理論題","question":"以下何者最能區分現代行銷與傳統銷售的觀點？","A":"企業利益優先順序","B":"僅專注商品銷售","C":"價值與關係的互動","D":"廣告推廣方式不同","answer":"C","explanation":"現代行銷強調「價值互換」與「關係建立」，而非僅以企業獲利或單向推銷為導向。"},
 {"chapter":"CH1","topic":"理論題","question":"下列何者不屬於行銷中可能交換的價值形式？","A":"商品","B":"理念","C":"資訊","D":"產線自動化","answer":"D","explanation":"行銷中的交換可涵蓋商品、服務、資訊、理念等，但「產線自動化」屬於內部營運，不是對外價值交換內容。"},
 {"chapter":"CH1","topic":"實務題","question":"消費者選擇購買 Patagonia 戶外服飾，不僅因為產品耐用，更因為品牌積極倡導「環境永續」與「修補代替丟棄」的價值。這種行為最符合哪一種「行銷價值交換」概念？","A":"理念交換","B":"金錢交換","C":"信任交換","D":"資訊交換","answer":"A","explanation":"理念交換強調品牌與消費者在價值觀上的共鳴，例如環保或公益。Patagonia 案例中，消費者購買是因為認同其「環境永續」理念，而非單純依賴品牌的品質，因此不是信任交換。"},
@@ -1945,10 +1987,26 @@
             const chapters = extractUniqueValues(quizData, 'chapter'); 
             const filterContainer = document.getElementById('chapter-filters');
             
-            filterContainer.innerHTML = chapters.map(chapter => `
+            // V12 NEW: 章節標題對照表
+            const chapterTitles = {
+                "CH1": "Ch1 行銷源典",
+                "CH2": "Ch2 市場分析",
+                "CH3": "Ch3 消費者行為",
+                "CH4": "Ch4 行銷研究",
+                "CH5": "Ch5 產品策略",
+                "CH6": "Ch6 品牌經營",
+                "CH7": "Ch7 定價策略",
+                "CH8": "Ch8 推廣策略",
+                "CH9": "Ch9 通路策略",
+                "CH10": "Ch10 行銷績效KPI"
+            };
+
+            filterContainer.innerHTML = chapters.map(chapter => {
+                const displayName = chapterTitles[chapter] || chapter;
+                return `
                 <input type="checkbox" id="chapter-${chapter}" name="chapter" value="${chapter}">
-                <label for="chapter-${chapter}" class="checkbox-label adjustable-text">${chapter}</label>
-            `).join('');
+                <label for="chapter-${chapter}" class="checkbox-label adjustable-text">${displayName}</label>
+            `}).join('');
             
             // 載入儲存的篩選狀態
             const storedChapters = JSON.parse(localStorage.getItem('selectedChapters') || '[]');
