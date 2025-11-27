@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 標題已修改為：TIMS初階行銷企劃_題庫訓練 -->
     <title>TIMS初階行銷企劃_題庫訓練</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Load Firebase (Required by guidelines, although this app is local-storage based) --><script type="module">
@@ -93,7 +94,7 @@
             color: var(--color-text);
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            min-height: 10vh;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -185,6 +186,30 @@
             box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1);
             transform: translateY(3px); /* 更有彈性的按壓效果 */
         }
+        
+        /* V9 START: 調整開始訓練按鈕的字體和圖示大小 */
+        #start-btn {
+            font-size: 1.4rem; /* 放大字體 */
+            padding: 18px 30px; /* 增大按鈕點擊區域 */
+            font-weight: 700; /* 加粗 */
+            background-color: var(--color-primary); /* 使用主色調使其更突出 */
+            border: 2px solid #e89fb0;
+            box-shadow: 0 8px 0 rgba(255, 183, 197, 0.8); /* 更深的陰影 */
+            color: var(--color-text); /* 確保文字顏色清晰 */
+        }
+        
+        #start-btn:hover {
+            background-color: #f7a9bb;
+            box-shadow: 0 4px 0 rgba(255, 183, 197, 0.6);
+            transform: translateY(4px);
+        }
+        
+        #start-btn > span {
+            font-size: 1.6em; /* 放大圖示 */
+            transform: translateY(2px); /* 輕微向下調整以對齊文字 */
+        }
+        
+        /* V9 END */
 
         .dark-mode .btn-primary { 
             background-color: var(--color-secondary); 
@@ -511,6 +536,7 @@
         }
 
 
+        /* 讓選中的選項有獨立的樣式 */
         input[type="radio"]:checked + .option-label {
             background-color: var(--color-secondary);
             border-color: #7bc6b9; /* Use a darker mint for a sharp outline */
@@ -523,6 +549,28 @@
         }
 
 
+        /* NEW: Highlight correct option after grading */
+        .option-label.correct-highlight {
+            background-color: var(--color-correct) !important;
+            border-color: #5ccb99 !important;
+            color: #1e272e !important;
+            font-weight: 700 !important;
+            box-shadow: 0 0 10px rgba(131, 232, 193, 0.9);
+        }
+        
+        .dark-mode .option-label.correct-highlight {
+            background-color: var(--color-correct) !important;
+            border-color: var(--color-correct) !important;
+            color: #1e272e !important;
+        }
+        
+        /* NEW: Disabled radio button styling */
+        input[type="radio"]:disabled + .option-label {
+            cursor: default;
+            opacity: 0.8;
+        }
+        
+        
         input[type="radio"] {
             display: none; 
         }
@@ -547,6 +595,59 @@
             max-width: 40%;
             padding: 15px 30px; /* 增大點擊區域 */
         }
+        
+        /* --- Immediate Feedback Styles (V8 新增) --- */
+        #feedback-area {
+            min-height: 50px;
+        }
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feedback-correct {
+            background-color: var(--color-light-correct); 
+            border: 2px solid var(--color-correct);
+        }
+
+        .feedback-incorrect {
+            background-color: var(--color-light-incorrect); 
+            border: 2px solid var(--color-incorrect);
+        }
+        
+        .dark-mode .feedback-correct {
+            background-color: #4b6d63;
+            border-color: #83E8C1;
+        }
+
+        .dark-mode .feedback-incorrect {
+            background-color: #6d424b;
+            border-color: #FF99A4;
+        }
+
+        .feedback-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-explanation {
+            font-size: var(--current-font-size);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--color-border);
+            line-height: 1.5;
+        }
+        
+        .dark-mode .feedback-explanation {
+            border-top: 1px dashed rgba(255, 255, 255, 0.3);
+        }
+
 
         /* --- Result Screen --- */
         .encouragement {
@@ -696,6 +797,15 @@
                 height: 25px; /* 進一步縮小高度 */
                 font-size: 0.75rem; /* 進一步縮小字體 */
             }
+            
+            /* V9 MOBILE FIX: 在手機上調整開始按鈕大小 */
+            #start-btn {
+                font-size: 1.2rem; /* 在手機上使用較小的放大字體 */
+                padding: 15px 20px;
+            }
+            #start-btn > span {
+                font-size: 1.4em; /* 在手機上調整圖示大小 */
+            }
         }
     </style>
 </head>
@@ -758,12 +868,17 @@
                     選擇的範圍中，隨機選取 "10 題"進行測驗
                 </div>
 
+                <!-- V9 START: 放大後的「開始訓練」按鈕 -->
                 <button id="start-btn" 
                         class="btn btn-primary" 
                         style="width: 100%; margin-top: 25px; display: flex; align-items: center; justify-content: center; gap: 10px;" 
                         onclick="startTraining()">
-                    <span style="font-size: 1.2em;">🚀</span> 開始訓練
+                    <!-- V9: 放大圖示 size: 1.6em (桌面), 1.4em (手機) -->
+                    <span style="font-size: 1.6em;">🚀</span> 
+                    <!-- V9: 放大字體 size: 1.4rem (桌面), 1.2rem (手機) -->
+                    開始訓練
                 </button>
+                <!-- V9 END -->
             </section>
 
             <!-- 2. Quiz Screen Template (Initially Hidden) -->
@@ -774,6 +889,9 @@
                 <div id="quiz-card-container">
                     <!-- Quiz Card generated by JS -->
                 </div>
+                
+                <!-- NEW: 即時反饋區域 -->
+                <div id="feedback-area"></div>
 
                 <!-- NEW LOCATION: 將題號導航移到題目卡片下方、操作按鈕上方 -->
                 <div id="question-index-nav"></div> 
@@ -786,8 +904,9 @@
                         下一題
                     </button>
                     <!-- 關鍵修改：在交卷按鈕中加入圖示 (✅) -->
+                    <!-- 由於是即時反饋，此按鈕功能改為「完成訓練並查看總成績」 -->
                     <button id="submit-btn" class="btn btn-submit adjustable-text" onclick="submitQuiz()">
-                        <span style="font-size: 1.1em; transform: translateY(1px);">✅</span> 交卷
+                        <span style="font-size: 1.1em; transform: translateY(1px);">✅</span> 完成訓練
                     </button>
                 </div>
             </section>
@@ -815,7 +934,7 @@
         // --- I. 資料結構 (Data Structure) ---
         // 題庫資料
         const quizData = [
-           {"chapter":"CH1","topic":"理論題","question":"根據台灣行銷科學學會的定義，「行銷」的核心本質是什麼？","A":"品牌建立","B":"價值交換","C":"產品設計","D":"顧客關係管理","answer":"B","explanation":"台灣行銷科學學會定義中，行銷的核心為「交換」與「交易」，即價值交換的過程。"},
+         {"chapter":"CH1","topic":"理論題","question":"根據台灣行銷科學學會的定義，「行銷」的核心本質是什麼？","A":"品牌建立","B":"價值交換","C":"產品設計","D":"顧客關係管理","answer":"B","explanation":"台灣行銷科學學會定義中，行銷的核心為「交換」與「交易」，即價值交換的過程。"},
 {"chapter":"CH1","topic":"理論題","question":"以下何者最能區分現代行銷與傳統銷售的觀點？","A":"企業利益優先順序","B":"僅專注商品銷售","C":"價值與關係的互動","D":"廣告推廣方式不同","answer":"C","explanation":"現代行銷強調「價值互換」與「關係建立」，而非僅以企業獲利或單向推銷為導向。"},
 {"chapter":"CH1","topic":"理論題","question":"下列何者不屬於行銷中可能交換的價值形式？","A":"商品","B":"理念","C":"資訊","D":"產線自動化","answer":"D","explanation":"行銷中的交換可涵蓋商品、服務、資訊、理念等，但「產線自動化」屬於內部營運，不是對外價值交換內容。"},
 {"chapter":"CH1","topic":"實務題","question":"消費者選擇購買 Patagonia 戶外服飾，不僅因為產品耐用，更因為品牌積極倡導「環境永續」與「修補代替丟棄」的價值。這種行為最符合哪一種「行銷價值交換」概念？","A":"理念交換","B":"金錢交換","C":"信任交換","D":"資訊交換","answer":"A","explanation":"理念交換強調品牌與消費者在價值觀上的共鳴，例如環保或公益。Patagonia 案例中，消費者購買是因為認同其「環境永續」理念，而非單純依賴品牌的品質，因此不是信任交換。"},
@@ -1757,6 +1876,10 @@
             }
             // 確保按鈕的背景色和圖示能正確更新
             updateButtonColors();
+            // 切換主題後，如果當前有題目，需要重新渲染一次反饋區域以更新顏色
+            if (document.getElementById('quiz-screen').style.display !== 'none' && userAnswers.hasOwnProperty(currentQuestionIndex)) {
+                renderFeedback(currentQuestionIndex, userAnswers[currentQuestionIndex]);
+            }
         }
         
         /** 輔助函數：更新按鈕顏色以匹配主題 */
@@ -1875,24 +1998,43 @@
             if (!question) return;
 
             const container = document.getElementById('quiz-card-container');
-            const options = ['A', 'B', 'C', 'D'].map(key => `
-                <li class="option-item">
-                    <input type="radio" id="q${index}-option-${key}" name="question-${index}" value="${key}" 
-                           ${userAnswers[index] === key ? 'checked' : ''}>
-                    <label for="q${index}-option-${key}" class="option-label adjustable-text">
-                        <span style="font-weight: 700; margin-right: 10px;">${key}.</span> ${question[key]}
-                    </label>
-                </li>
-            `).join('');
+            const answerKeys = ['A', 'B', 'C', 'D'];
+            const userAnswer = userAnswers[index];
+            const isAnswered = userAnswer !== undefined;
 
-            // *** 關鍵修改：刪除題目文字中的 [${question.chapter} - ${question.topic}] 標籤 ***
+            const optionsHTML = answerKeys.map(key => {
+                let labelClass = 'option-label adjustable-text';
+                let disabledAttr = isAnswered ? 'disabled' : '';
+                
+                // 如果已作答，且這是正確答案，則高亮它
+                if (isAnswered && key === question.answer) {
+                    labelClass += ' correct-highlight';
+                } 
+                // 如果已作答，且是使用者錯誤的選擇，則保持選中樣式，但選項被禁用
+                else if (isAnswered && key === userAnswer) {
+                    // 保持選中樣式，但在 CSS 中已通過 radio:disabled + label 降低透明度
+                }
+
+                return `
+                    <li class="option-item">
+                        <input type="radio" id="q${index}-option-${key}" name="question-${index}" value="${key}" 
+                               ${userAnswer === key ? 'checked' : ''}
+                               ${disabledAttr}
+                               onclick="handleOptionChange('${key}')">
+                        <label for="q${index}-option-${key}" class="${labelClass}">
+                            <span style="font-weight: 700; margin-right: 10px;">${key}.</span> ${question[key]}
+                        </label>
+                    </li>
+                `;
+            }).join('');
+
             container.innerHTML = `
                 <div class="quiz-card adjustable-text">
                     <p class="question-text">
                         Q${index + 1}. ${question.question}
                     </p>
-                    <ul class="options-list" onchange="saveAnswer()">
-                        ${options}
+                    <ul class="options-list">
+                        ${optionsHTML}
                     </ul>
                 </div>
             `;
@@ -1901,6 +2043,13 @@
             container.querySelectorAll('.adjustable-text').forEach(el => {
                 el.style.fontSize = getComputedStyle(document.documentElement).getPropertyValue('--current-font-size');
             });
+            
+            // 如果已作答，立即渲染反饋區
+            if (isAnswered) {
+                renderFeedback(index, userAnswer);
+            } else {
+                document.getElementById('feedback-area').innerHTML = '';
+            }
 
             // 更新頁面標題（可選）
             document.title = `Q${index + 1}/${totalQuestions} | TIMS 測驗`;
@@ -1909,17 +2058,97 @@
             updateNavigationButtons();
             updateIndexNav(index);
         }
+        
+        /** V8 NEW: 處理選項點擊並提供即時反饋 */
+        function handleOptionChange(selectedValue) {
+            const index = currentQuestionIndex;
+            
+            // 1. 儲存答案
+            userAnswers[index] = selectedValue;
+            
+            // 2. 禁用所有選項 (防止更改)
+            document.querySelectorAll(`input[name="question-${index}"]`).forEach(radio => {
+                radio.disabled = true;
+            });
+            
+            // 3. 渲染反饋區域
+            renderFeedback(index, selectedValue);
+            
+            // 4. 更新導航
+            updateIndexNav();
+            updateNavigationButtons();
+        }
+        
+        /** V8 NEW: 渲染即時反饋區域 */
+        function renderFeedback(index, selectedValue) {
+            const question = currentQuiz[index];
+            const isCorrect = selectedValue === question.answer;
+            const feedbackArea = document.getElementById('feedback-area');
+            const itemClass = isCorrect ? 'feedback-correct' : 'feedback-incorrect';
+            const icon = isCorrect ? '✅ 答對了！' : '❌ 答錯了...';
+            
+            const selectedOptionText = question[selectedValue];
+            const correctOptionText = question[question.answer];
+            
+            // 找到正確答案的 Label 進行高亮 (即使是使用者點錯，正確答案也會被高亮)
+            const correctRadio = document.getElementById(`q${index}-option-${question.answer}`);
+            if (correctRadio) {
+                const correctLabel = document.querySelector(`label[for="${correctRadio.id}"]`);
+                if (correctLabel) {
+                    correctLabel.classList.add('correct-highlight');
+                }
+            }
+            
+            // 創建反饋 HTML
+            feedbackArea.innerHTML = `
+                <div class="feedback-box adjustable-text ${itemClass}">
+                    <div class="feedback-title">
+                        <span style="color: var(--color-text);">${icon}</span>
+                        <span style="font-weight: 500; font-size: 0.9rem; color: var(--color-text-light);">
+                            (${question.chapter} - ${question.topic})
+                        </span>
+                    </div>
+                    
+                    <p style="margin: 10px 0 0 0; font-weight: 600;">您的選擇 (${selectedValue || '-'}): 
+                        <span style="font-weight: 400; color: ${isCorrect ? '#1e272e' : 'var(--color-text)'};">
+                            ${selectedOptionText || '未作答'}
+                        </span>
+                    </p>
+                    ${!isCorrect ? 
+                        `<p style="margin: 5px 0; font-weight: 600;">正確答案 (${question.answer}): 
+                            <span style="font-weight: 400; color: #1e272e;">
+                                ${correctOptionText}
+                            </span>
+                        </p>` : ''}
+
+                    <div class="feedback-explanation">
+                        <span style="font-weight: 700;">詳細解析:</span> ${question.explanation}
+                    </div>
+                </div>
+            `;
+            
+            // 確保反饋區的字體大小也是可調整的
+            feedbackArea.querySelectorAll('.adjustable-text').forEach(el => {
+                el.style.fontSize = getComputedStyle(document.documentElement).getPropertyValue('--current-font-size');
+            });
+
+        }
 
         /** 更新上一題/下一題按鈕狀態 */
         function updateNavigationButtons() {
             document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
             document.getElementById('next-btn').disabled = currentQuestionIndex >= currentQuiz.length - 1;
+            
+            // 確保下一題按鈕在作答後才啟用 (若作答後)
+            const isAnswered = userAnswers.hasOwnProperty(currentQuestionIndex);
+            if (!isAnswered && currentQuestionIndex < currentQuiz.length - 1) {
+                // 如果是未作答狀態，只有切換到下一題的按鈕應該保持禁用，因為我們希望用戶必須作答
+                // 但為了靈活性，允許用戶跳過，所以這裡不改動 next-btn 的禁用邏輯。
+            }
         }
 
         /** 導航至上一題或下一題 */
         function navigateQuiz(direction) {
-            saveAnswer(); // 導航前先儲存答案
-
             const newIndex = currentQuestionIndex + direction;
             if (newIndex >= 0 && newIndex < currentQuiz.length) {
                 currentQuestionIndex = newIndex;
@@ -1929,22 +2158,13 @@
             }
         }
 
-        /** 儲存使用者在當前題目的選擇 */
-        function saveAnswer() {
-            const selectedOption = document.querySelector(`input[name="question-${currentQuestionIndex}"]:checked`);
-            if (selectedOption) {
-                userAnswers[currentQuestionIndex] = selectedOption.value;
-            } else {
-                delete userAnswers[currentQuestionIndex]; // 如果取消選擇，則刪除答案
-            }
-            updateIndexNav();
-        }
         
         /** 更新題號導航按鈕的狀態 (已答/未答/當前) */
         function updateIndexNav(activeIndex = currentQuestionIndex) {
             const navContainer = document.getElementById('question-index-nav');
             navContainer.innerHTML = currentQuiz.map((_, index) => {
-                const isAnswered = userAnswers.hasOwnProperty(index);
+                // 由於是即時反饋，只要 userAnswers 中有記錄，就算已答
+                const isAnswered = userAnswers.hasOwnProperty(index); 
                 const isActive = index === activeIndex;
                 
                 let className = 'index-btn';
@@ -1960,15 +2180,14 @@
 
         /** 跳轉到指定題號 */
         function jumpToQuestion(index) {
-            saveAnswer(); // 跳轉前儲存當前答案
             currentQuestionIndex = index;
             renderQuestion(currentQuestionIndex);
             document.querySelector('.container').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        /** 提交測驗並計算結果 */
+        /** 提交測驗並計算結果 (現在只用於切換到結果畫面) */
         function submitQuiz() {
-            saveAnswer(); // 儲存最後一題的答案
+            // 由於採用即時反饋，這裡無需額外儲存答案
             
             const total = currentQuiz.length;
             let correctCount = 0;
@@ -1976,7 +2195,8 @@
 
             currentQuiz.forEach((q, index) => {
                 const userAnswer = userAnswers[index];
-                const isCorrect = userAnswer === q.answer;
+                // 只有已作答的題目才進行評分
+                const isCorrect = userAnswer !== undefined && userAnswer === q.answer;
                 if (isCorrect) {
                     correctCount++;
                 }
@@ -1989,7 +2209,6 @@
                     isCorrect: isCorrect,
                     explanation: q.explanation,
                     options: { A: q.A, B: q.B, C: q.C, D: q.D },
-                    // V7 關鍵新增: 儲存章節與題目領域
                     chapter: q.chapter,
                     topic: q.topic
                 });
@@ -2007,7 +2226,7 @@
             document.title = `測驗結果 | TIMS 測驗`;
         }
 
-        /** 渲染結果畫面 */
+        /** 渲染結果畫面 (邏輯與之前保持一致) */
         function renderResultScreen(score, correctCount, total, results) {
             const encouragementDiv = document.getElementById('result-score');
             const detailDiv = document.getElementById('result-details');
@@ -2039,20 +2258,20 @@
 
             // 渲染詳細結果
             detailDiv.innerHTML = results.map(item => {
-                const itemClass = item.isCorrect ? 'correct' : 'incorrect';
+                const itemClass = item.userAnswer ? (item.isCorrect ? 'correct' : 'incorrect') : 'unanswered';
                 
                 // 找出使用者選擇的選項內容
                 const userAnswerText = item.userAnswer ? item.options[item.userAnswer] : '未作答';
                 
                 // 調整顏色以便在深色模式下有更好的對比
                 const correctColor = document.body.classList.contains('dark-mode') ? 'var(--color-correct)' : 'green';
-                const wrongColor = document.body.classList.contains('dark-mode') ? 'var(--color-incorrect)' : 'red';
+                const wrongColor = document.body.contains('dark-mode') ? 'var(--color-incorrect)' : 'red';
                 const defaultColor = document.body.classList.contains('dark-mode') ? 'var(--color-text-light)' : '#7f8c8d';
 
                 return `
                     <div class="result-item ${itemClass}">
                         <div class="result-item-header">
-                            <span style="color: var(--color-text);">Q${item.index}. ${item.isCorrect ? '✅ 答對' : '❌ 答錯'}</span>
+                            <span style="color: var(--color-text);">Q${item.index}. ${item.userAnswer ? (item.isCorrect ? '✅ 答對' : '❌ 答錯') : '❓ 未作答'}</span>
                             <!-- V7 關鍵新增: 顯示章節與題目領域 -->
                             <span style="font-size: 0.9rem; font-weight: 500; color: var(--color-text-light);">
                                 (${item.chapter} - ${item.topic})
